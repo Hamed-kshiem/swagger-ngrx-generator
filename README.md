@@ -34,9 +34,7 @@ pip install pyyaml
 ### Download the Generator
 
 ```bash
-# Clone or download the ngrx_generator.py file
-curl -O https://raw.githubusercontent.com/your-repo/ngrx-generator/main/ngrx_generator.py
-chmod +x ngrx_generator.py
+git clone https://github.com/Hamed-kshiem/swagger-ngrx-generator.git
 ```
 
 ## 🎯 Quick Start
