@@ -1,0 +1,1030 @@
+openapi: 3.0.3
+info:
+  title: E-commerce API
+  description: A comprehensive API for testing NgRx generator with various endpoints
+  version: 1.0.0
+  contact:
+    name: API Support
+    email: support@ecommerce.com
+
+servers:
+  - url: https://api.ecommerce.com/v1
+    description: Production server
+  - url: https://staging-api.ecommerce.com/v1
+    description: Staging server
+
+paths:
+  # User Management
+  /users:
+    get:
+      tags: [users]
+      operationId: getUsers
+      summary: Get all users
+      description: Retrieve a paginated list of all users
+      parameters:
+        - name: page
+          in: query
+          schema:
+            type: integer
+            default: 1
+        - name: limit
+          in: query
+          schema:
+            type: integer
+            default: 10
+      responses:
+        '200':
+          description: List of users
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  users:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/User'
+                  pagination:
+                    $ref: '#/components/schemas/Pagination'
+    post:
+      tags: [users]
+      operationId: createUser
+      summary: Create a new user
+      description: Create a new user account
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateUserRequest'
+      responses:
+        '201':
+          description: User created successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User'
+
+  /users/{userId}:
+    get:
+      tags: [users]
+      operationId: getUserById
+      summary: Get user by ID
+      description: Retrieve a specific user by their ID
+      parameters:
+        - name: userId
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: User details
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User'
+    put:
+      tags: [users]
+      operationId: updateUser
+      summary: Update user
+      description: Update an existing user
+      parameters:
+        - name: userId
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdateUserRequest'
+      responses:
+        '200':
+          description: User updated successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User'
+    delete:
+      tags: [users]
+      operationId: deleteUser
+      summary: Delete user
+      description: Delete a user account
+      parameters:
+        - name: userId
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '204':
+          description: User deleted successfully
+
+  /users/{userId}/profile:
+    get:
+      tags: [users]
+      operationId: getUserProfile
+      summary: Get user profile
+      description: Get detailed user profile information
+      parameters:
+        - name: userId
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: User profile
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserProfile'
+
+  # Product Management
+  /products:
+    get:
+      tags: [products]
+      operationId: getProducts
+      summary: Get all products
+      description: Retrieve a list of products with filtering options
+      parameters:
+        - name: category
+          in: query
+          schema:
+            type: string
+        - name: minPrice
+          in: query
+          schema:
+            type: number
+        - name: maxPrice
+          in: query
+          schema:
+            type: number
+        - name: page
+          in: query
+          schema:
+            type: integer
+            default: 1
+      responses:
+        '200':
+          description: List of products
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  products:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Product'
+                  pagination:
+                    $ref: '#/components/schemas/Pagination'
+    post:
+      tags: [products]
+      operationId: createProduct
+      summary: Create a new product
+      description: Add a new product to the catalog
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateProductRequest'
+      responses:
+        '201':
+          description: Product created successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Product'
+
+  /products/{productId}:
+    get:
+      tags: [products]
+      operationId: getProductById
+      summary: Get product by ID
+      description: Retrieve a specific product by ID
+      parameters:
+        - name: productId
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Product details
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Product'
+    put:
+      tags: [products]
+      operationId: updateProduct
+      summary: Update product
+      description: Update an existing product
+      parameters:
+        - name: productId
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdateProductRequest'
+      responses:
+        '200':
+          description: Product updated successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Product'
+    delete:
+      tags: [products]
+      operationId: deleteProduct
+      summary: Delete product
+      description: Remove a product from the catalog
+      parameters:
+        - name: productId
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '204':
+          description: Product deleted successfully
+
+  /products/{productId}/reviews:
+    get:
+      tags: [products]
+      operationId: getProductReviews
+      summary: Get product reviews
+      description: Get all reviews for a specific product
+      parameters:
+        - name: productId
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Product reviews
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Review'
+
+  # Order Management
+  /orders:
+    get:
+      tags: [orders]
+      operationId: getOrders
+      summary: Get all orders
+      description: Retrieve user's orders
+      parameters:
+        - name: status
+          in: query
+          schema:
+            type: string
+            enum: [pending, processing, shipped, delivered, cancelled]
+        - name: page
+          in: query
+          schema:
+            type: integer
+            default: 1
+      responses:
+        '200':
+          description: List of orders
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  orders:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Order'
+                  pagination:
+                    $ref: '#/components/schemas/Pagination'
+    post:
+      tags: [orders]
+      operationId: createOrder
+      summary: Create a new order
+      description: Place a new order
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateOrderRequest'
+      responses:
+        '201':
+          description: Order created successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Order'
+
+  /orders/{orderId}:
+    get:
+      tags: [orders]
+      operationId: getOrderById
+      summary: Get order by ID
+      description: Retrieve a specific order by ID
+      parameters:
+        - name: orderId
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Order details
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Order'
+    patch:
+      tags: [orders]
+      operationId: updateOrderStatus
+      summary: Update order status
+      description: Update the status of an order
+      parameters:
+        - name: orderId
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                status:
+                  type: string
+                  enum: [pending, processing, shipped, delivered, cancelled]
+              required: [status]
+      responses:
+        '200':
+          description: Order status updated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Order'
+
+  /orders/{orderId}/cancel:
+    post:
+      tags: [orders]
+      operationId: cancelOrder
+      summary: Cancel order
+      description: Cancel an existing order
+      parameters:
+        - name: orderId
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Order cancelled successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Order'
+
+  # Category Management
+  /categories:
+    get:
+      tags: [categories]
+      operationId: getCategories
+      summary: Get all categories
+      description: Retrieve all product categories
+      responses:
+        '200':
+          description: List of categories
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Category'
+    post:
+      tags: [categories]
+      operationId: createCategory
+      summary: Create a new category
+      description: Add a new product category
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateCategoryRequest'
+      responses:
+        '201':
+          description: Category created successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Category'
+
+  /categories/{categoryId}:
+    get:
+      tags: [categories]
+      operationId: getCategoryById
+      summary: Get category by ID
+      description: Retrieve a specific category by ID
+      parameters:
+        - name: categoryId
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Category details
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Category'
+    put:
+      tags: [categories]
+      operationId: updateCategory
+      summary: Update category
+      description: Update an existing category
+      parameters:
+        - name: categoryId
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdateCategoryRequest'
+      responses:
+        '200':
+          description: Category updated successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Category'
+
+  # Authentication
+  /auth/login:
+    post:
+      tags: [auth]
+      operationId: login
+      summary: User login
+      description: Authenticate user and return access token
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/LoginRequest'
+      responses:
+        '200':
+          description: Login successful
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AuthResponse'
+
+  /auth/register:
+    post:
+      tags: [auth]
+      operationId: register
+      summary: User registration
+      description: Register a new user account
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/RegisterRequest'
+      responses:
+        '201':
+          description: Registration successful
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AuthResponse'
+
+  /auth/refresh:
+    post:
+      tags: [auth]
+      operationId: refreshToken
+      summary: Refresh access token
+      description: Get a new access token using refresh token
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                refreshToken:
+                  type: string
+              required: [refreshToken]
+      responses:
+        '200':
+          description: Token refreshed successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AuthResponse'
+
+components:
+  schemas:
+    User:
+      type: object
+      properties:
+        id:
+          type: string
+          example: "user123"
+        email:
+          type: string
+          format: email
+          example: "user@example.com"
+        firstName:
+          type: string
+          example: "John"
+        lastName:
+          type: string
+          example: "Doe"
+        dateOfBirth:
+          type: string
+          format: date
+          example: "1990-01-15"
+        isActive:
+          type: boolean
+          example: true
+        role:
+          type: string
+          enum: [customer, admin, moderator]
+          example: "customer"
+        createdAt:
+          type: string
+          format: date-time
+          example: "2023-01-01T00:00:00Z"
+        updatedAt:
+          type: string
+          format: date-time
+          example: "2023-01-01T00:00:00Z"
+      required: [id, email, firstName, lastName, isActive, role, createdAt, updatedAt]
+
+    UserProfile:
+      type: object
+      properties:
+        id:
+          type: string
+        email:
+          type: string
+        firstName:
+          type: string
+        lastName:
+          type: string
+        avatar:
+          type: string
+          format: uri
+        phone:
+          type: string
+        address:
+          $ref: '#/components/schemas/Address'
+        preferences:
+          type: object
+          properties:
+            newsletter:
+              type: boolean
+            notifications:
+              type: boolean
+        orderHistory:
+          type: array
+          items:
+            $ref: '#/components/schemas/OrderSummary'
+
+    CreateUserRequest:
+      type: object
+      properties:
+        email:
+          type: string
+          format: email
+        firstName:
+          type: string
+        lastName:
+          type: string
+        password:
+          type: string
+          minLength: 8
+        dateOfBirth:
+          type: string
+          format: date
+      required: [email, firstName, lastName, password]
+
+    UpdateUserRequest:
+      type: object
+      properties:
+        firstName:
+          type: string
+        lastName:
+          type: string
+        dateOfBirth:
+          type: string
+          format: date
+        isActive:
+          type: boolean
+
+    Product:
+      type: object
+      properties:
+        id:
+          type: string
+          example: "prod123"
+        name:
+          type: string
+          example: "Wireless Headphones"
+        description:
+          type: string
+          example: "High-quality wireless headphones with noise cancellation"
+        price:
+          type: number
+          format: decimal
+          example: 199.99
+        category:
+          $ref: '#/components/schemas/Category'
+        images:
+          type: array
+          items:
+            type: string
+            format: uri
+        inStock:
+          type: boolean
+          example: true
+        stockQuantity:
+          type: integer
+          example: 50
+        rating:
+          type: number
+          format: float
+          example: 4.5
+        reviewCount:
+          type: integer
+          example: 128
+        tags:
+          type: array
+          items:
+            type: string
+        createdAt:
+          type: string
+          format: date-time
+        updatedAt:
+          type: string
+          format: date-time
+      required: [id, name, description, price, category, inStock, stockQuantity, createdAt, updatedAt]
+
+    CreateProductRequest:
+      type: object
+      properties:
+        name:
+          type: string
+        description:
+          type: string
+        price:
+          type: number
+          format: decimal
+        categoryId:
+          type: string
+        images:
+          type: array
+          items:
+            type: string
+            format: uri
+        stockQuantity:
+          type: integer
+        tags:
+          type: array
+          items:
+            type: string
+      required: [name, description, price, categoryId, stockQuantity]
+
+    UpdateProductRequest:
+      type: object
+      properties:
+        name:
+          type: string
+        description:
+          type: string
+        price:
+          type: number
+          format: decimal
+        categoryId:
+          type: string
+        images:
+          type: array
+          items:
+            type: string
+            format: uri
+        stockQuantity:
+          type: integer
+        tags:
+          type: array
+          items:
+            type: string
+
+    Category:
+      type: object
+      properties:
+        id:
+          type: string
+          example: "cat123"
+        name:
+          type: string
+          example: "Electronics"
+        description:
+          type: string
+          example: "Electronic devices and accessories"
+        slug:
+          type: string
+          example: "electronics"
+        parentId:
+          type: string
+          nullable: true
+        isActive:
+          type: boolean
+          example: true
+        sortOrder:
+          type: integer
+          example: 1
+        createdAt:
+          type: string
+          format: date-time
+        updatedAt:
+          type: string
+          format: date-time
+      required: [id, name, slug, isActive, sortOrder, createdAt, updatedAt]
+
+    CreateCategoryRequest:
+      type: object
+      properties:
+        name:
+          type: string
+        description:
+          type: string
+        slug:
+          type: string
+        parentId:
+          type: string
+          nullable: true
+        sortOrder:
+          type: integer
+      required: [name, slug]
+
+    UpdateCategoryRequest:
+      type: object
+      properties:
+        name:
+          type: string
+        description:
+          type: string
+        slug:
+          type: string
+        parentId:
+          type: string
+          nullable: true
+        isActive:
+          type: boolean
+        sortOrder:
+          type: integer
+
+    Order:
+      type: object
+      properties:
+        id:
+          type: string
+          example: "order123"
+        userId:
+          type: string
+        orderNumber:
+          type: string
+          example: "ORD-2023-001"
+        status:
+          type: string
+          enum: [pending, processing, shipped, delivered, cancelled]
+          example: "pending"
+        items:
+          type: array
+          items:
+            $ref: '#/components/schemas/OrderItem'
+        subtotal:
+          type: number
+          format: decimal
+          example: 299.98
+        tax:
+          type: number
+          format: decimal
+          example: 30.00
+        shipping:
+          type: number
+          format: decimal
+          example: 9.99
+        total:
+          type: number
+          format: decimal
+          example: 339.97
+        shippingAddress:
+          $ref: '#/components/schemas/Address'
+        billingAddress:
+          $ref: '#/components/schemas/Address'
+        paymentMethod:
+          type: string
+          example: "credit_card"
+        createdAt:
+          type: string
+          format: date-time
+        updatedAt:
+          type: string
+          format: date-time
+      required: [id, userId, orderNumber, status, items, subtotal, total, createdAt, updatedAt]
+
+    OrderSummary:
+      type: object
+      properties:
+        id:
+          type: string
+        orderNumber:
+          type: string
+        status:
+          type: string
+        total:
+          type: number
+        createdAt:
+          type: string
+          format: date-time
+
+    CreateOrderRequest:
+      type: object
+      properties:
+        items:
+          type: array
+          items:
+            type: object
+            properties:
+              productId:
+                type: string
+              quantity:
+                type: integer
+            required: [productId, quantity]
+        shippingAddress:
+          $ref: '#/components/schemas/Address'
+        billingAddress:
+          $ref: '#/components/schemas/Address'
+        paymentMethod:
+          type: string
+      required: [items, shippingAddress, paymentMethod]
+
+    OrderItem:
+      type: object
+      properties:
+        id:
+          type: string
+        product:
+          $ref: '#/components/schemas/Product'
+        quantity:
+          type: integer
+          example: 2
+        unitPrice:
+          type: number
+          format: decimal
+          example: 199.99
+        totalPrice:
+          type: number
+          format: decimal
+          example: 399.98
+      required: [id, product, quantity, unitPrice, totalPrice]
+
+    Review:
+      type: object
+      properties:
+        id:
+          type: string
+        userId:
+          type: string
+        productId:
+          type: string
+        rating:
+          type: integer
+          minimum: 1
+          maximum: 5
+          example: 5
+        title:
+          type: string
+          example: "Great product!"
+        comment:
+          type: string
+          example: "I love these headphones. Great sound quality!"
+        verified:
+          type: boolean
+          example: true
+        helpful:
+          type: integer
+          example: 5
+        createdAt:
+          type: string
+          format: date-time
+      required: [id, userId, productId, rating, title, createdAt]
+
+    Address:
+      type: object
+      properties:
+        street:
+          type: string
+          example: "123 Main St"
+        city:
+          type: string
+          example: "New York"
+        state:
+          type: string
+          example: "NY"
+        zipCode:
+          type: string
+          example: "10001"
+        country:
+          type: string
+          example: "USA"
+      required: [street, city, state, zipCode, country]
+
+    Pagination:
+      type: object
+      properties:
+        page:
+          type: integer
+          example: 1
+        limit:
+          type: integer
+          example: 10
+        total:
+          type: integer
+          example: 100
+        totalPages:
+          type: integer
+          example: 10
+      required: [page, limit, total, totalPages]
+
+    LoginRequest:
+      type: object
+      properties:
+        email:
+          type: string
+          format: email
+        password:
+          type: string
+      required: [email, password]
+
+    RegisterRequest:
+      type: object
+      properties:
+        email:
+          type: string
+          format: email
+        password:
+          type: string
+          minLength: 8
+        firstName:
+          type: string
+        lastName:
+          type: string
+      required: [email, password, firstName, lastName]
+
+    AuthResponse:
+      type: object
+      properties:
+        accessToken:
+          type: string
+        refreshToken:
+          type: string
+        expiresIn:
+          type: integer
+          example: 3600
+        user:
+          $ref: '#/components/schemas/User'
+      required: [accessToken, refreshToken, expiresIn, user]
+
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+
+security:
+  - bearerAuth: []
